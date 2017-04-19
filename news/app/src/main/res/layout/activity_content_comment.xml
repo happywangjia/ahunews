@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.wangjia.news.ContentCommentActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/content_comment_toolbar"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:background="#837C7C">
+
+    </android.support.v7.widget.Toolbar>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <EditText
+            android:id="@+id/id_comment_edit"
+            android:background="@android:drawable/alert_light_frame"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:gravity="top"
+            android:maxLength="140"
+
+            />
+        <TextView
+            android:text="限制字数为140字"
+            android:layout_gravity="right"
+            android:paddingRight="5dp"
+            android:layout_marginRight="20dp"
+            android:textColor="#67582E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:layout_gravity="center"
+            android:id="@+id/id_comment_submit"
+            android:layout_width="300px"
+            android:layout_height="wrap_content"
+            android:text="提     交"
+            android:textSize="25sp"
+
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

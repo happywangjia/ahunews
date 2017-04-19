@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".NewsContentActivity"
+    >
+
+    <item android:id="@+id/action_share"
+        android:title="分享"
+        android:orderInCategory="80"
+        android:icon="@drawable/ic_menu_share"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_collect"
+        android:title="收藏"
+        android:orderInCategory="90"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_comment"
+        android:title="评论"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"/>
+
+</menu>
