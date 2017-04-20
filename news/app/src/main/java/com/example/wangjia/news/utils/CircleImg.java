@@ -24,16 +24,7 @@ import android.widget.ImageView;
 import com.example.wangjia.news.R;
 
 
-/**
- * All rights Reserved, Designed By GeofferySun
- *
- * @Title: CircleImg.java
- * @Package sun.geoffery.libaray.widget
- * @Description:圆形ImageView
- * @author: GeofferySun
- * @date: 2014-12-5 涓嬪崍11:38:42
- * @version V1.0
- */
+
 public class CircleImg extends android.support.v7.widget.AppCompatImageView {
 
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
