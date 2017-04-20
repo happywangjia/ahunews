@@ -196,6 +196,11 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             String motto=cnt_json.getString("motto");
                             String icon=cnt_json.getString("icon");
+                            String telephone=cnt_json.getString("tel");
+                            String email=cnt_json.getString("email");
+                            editor.putString("telephone",telephone);
+                            editor.putString("email",email);
+
 //                            nextBundle.putString("motto",motto);
 //                            toZhuIntent.putExtras(nextBundle);
                             editor.putString("motto",motto);

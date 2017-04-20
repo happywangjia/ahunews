@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.wangjia.news.fragment.AmuseFragment;
+import com.example.wangjia.news.utils.CircleImg;
 import com.example.wangjia.news.utils.ViewPagerIndicator;
 
 import java.net.URL;
@@ -47,7 +48,7 @@ public class ZhuYeActivity extends AppCompatActivity implements
     private LinearLayout layout_news;
     HashMap<String,String> map=new HashMap<>();
     SharedPreferences preferences;
-    public ImageView imageView;
+    public CircleImg imageView;
 
 
 //-------------------------------------------
@@ -107,7 +108,7 @@ public class ZhuYeActivity extends AppCompatActivity implements
         zhu_motto= (TextView) header.findViewById(R.id.zhu_motto);
         zhu_username.setText(username);
         zhu_motto.setText(motto);
-        imageView= (ImageView) header.findViewById(R.id.id_icon);
+        imageView= (CircleImg) header.findViewById(R.id.id_icon);
 
 
         layout_news= (LinearLayout) findViewById(R.id.id_layout_news);
