@@ -1,28 +1,27 @@
 package com.example.wangjia.news;
 
+import android.os.Message;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +31,6 @@ import com.example.wangjia.news.utils.SelectPicPopupWindow;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Set;
 
 /**
  * Created by wangjia on 2017/4/5.
@@ -50,11 +48,13 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private static ProgressDialog pd;
 
 
+
     private String urlpath;			// 图片本地路径
     private static final int REQUESTCODE_PICK = 0;		// 相册选图标记
     private static final int REQUESTCODE_TAKE = 1;		// 相机拍照标记
     private static final int REQUESTCODE_CUTTING = 2;	// 图片裁切标记
     private static String IMAGE_FILE_NAME;
+    private static final int GET_DRAWABLE=4;
 
     private CircleImg imageView;
     String icon;
@@ -79,7 +79,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         toolbar.setTitleTextColor(Color.parseColor("#ffffffff"));
         setSupportActionBar(toolbar);
         motto = preferences.getString("motto", null);
-        icon = preferences.getString("icon", null);
+        icon=preferences.getString("icon",null);
         username = preferences.getString("username", null);
         telephone = preferences.getString("telephone", null);
         email = preferences.getString("email", null);
@@ -98,8 +98,6 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         imageView.setOnClickListener(this);
         IMAGE_FILE_NAME=username+".jpg";
         getData();
-
-
     }
 
     public void getData() {
@@ -250,13 +248,42 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             public void run() {
                 try {
                     URL url = new URL(icon);
-                    imageView.setImageBitmap(BitmapFactory.decodeStream(url.openStream()));
+                    Drawable drawable=Drawable.createFromStream(url.openStream(),"icon.jpg");
+//                    imageView.setImageBitmap(BitmapFactory.decodeStream(url.openStream()));
+                    Message msg=new Message();
+                    msg.what=GET_DRAWABLE;
+                    msg.obj=drawable;
+                    handler.sendMessage(msg);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode){
+            case KeyEvent.KEYCODE_BACK:
+                finish();
+                return false;
+            default:
+                return super.onKeyDown(keyCode,event);
+        }
+    }
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case GET_DRAWABLE:
+                    imageView.setImageDrawable((Drawable) msg.obj);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
 
 }
