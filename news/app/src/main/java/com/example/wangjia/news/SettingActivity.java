@@ -1,6 +1,5 @@
 package com.example.wangjia.news;
 
-import android.os.Message;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,10 +11,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,10 +28,19 @@ import android.widget.Toast;
 
 import com.example.wangjia.news.utils.CircleImg;
 import com.example.wangjia.news.utils.FileUtil;
+import com.example.wangjia.news.utils.NetUtil;
 import com.example.wangjia.news.utils.SelectPicPopupWindow;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by wangjia on 2017/4/5.
@@ -47,14 +57,15 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private SelectPicPopupWindow menuWindow;
     private static ProgressDialog pd;
 
-
-
-    private String urlpath;			// 图片本地路径
-    private static final int REQUESTCODE_PICK = 0;		// 相册选图标记
-    private static final int REQUESTCODE_TAKE = 1;		// 相机拍照标记
-    private static final int REQUESTCODE_CUTTING = 2;	// 图片裁切标记
+    private String resultStr = "";    // 服务端返回结果集
+    private static String serverPath;
+    private String urlpath = null;            // 图片本地路径
+    private static final int REQUESTCODE_PICK = 0;        // 相册选图标记
+    private static final int REQUESTCODE_TAKE = 1;        // 相机拍照标记
+    private static final int REQUESTCODE_CUTTING = 2;    // 图片裁切标记
     private static String IMAGE_FILE_NAME;
-    private static final int GET_DRAWABLE=4;
+    private static final int GET_DRAWABLE = 4;
+    private static final int CHAGNG_RESULT = 5;
 
     private CircleImg imageView;
     String icon;
@@ -79,7 +90,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         toolbar.setTitleTextColor(Color.parseColor("#ffffffff"));
         setSupportActionBar(toolbar);
         motto = preferences.getString("motto", null);
-        icon=preferences.getString("icon",null);
+        icon = preferences.getString("icon", null);
         username = preferences.getString("username", null);
         telephone = preferences.getString("telephone", null);
         email = preferences.getString("email", null);
@@ -96,8 +107,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         bt_submit.setOnClickListener(this);
         bt_cancel.setOnClickListener(this);
         imageView.setOnClickListener(this);
-        IMAGE_FILE_NAME=username+".jpg";
+        IMAGE_FILE_NAME = username + ".jpg";
         getData();
+        String localhost = getResources().getString(R.string.localhost);
+        serverPath = "http://" + localhost + "/ahu/changInfo.php";
     }
 
     public void getData() {
@@ -118,18 +131,18 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.id_set_username:
-                Toast.makeText(SettingActivity.this, "个人信息", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(SettingActivity.this, "个人信息", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.id_logout:
                 doLogout();
                 break;
             case R.id.id_set_cancel:
                 getData();
-                Toast.makeText(SettingActivity.this, "cancel", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(SettingActivity.this, "cancel", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.id_set_telephone:
-
-                Toast.makeText(SettingActivity.this, "submit", Toast.LENGTH_SHORT).show();
+            case R.id.id_set_submit:
+                doSubmit();
+//                Toast.makeText(SettingActivity.this, "submit", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.id_set_icon:
                 changIcon();
@@ -139,11 +152,45 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    private void changIcon() {
-        menuWindow=new SelectPicPopupWindow(SettingActivity.this,itemsOnClick);
-        menuWindow.showAtLocation(findViewById(R.id.id_set_layout),
-                Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+    private void doSubmit() {
+        if(isTelephone(et_telephone.getText().toString().trim())==false){
+            return ;
+        }
+        if(isEmail(et_email.getText().toString().toString().trim())==false){
+            return ;
+        }
+
+        pd = ProgressDialog.show(SettingActivity.this, null, "正在提交修改，请稍候...");
+        new Thread(uploadImageRunnable).start();
     }
+
+    private boolean isEmail(String trim) {
+        if(trim.isEmpty()) return true;
+        String check = "^([a-z0-9A-Z]+[-|_|.]?)*[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        Pattern regex = Pattern.compile(check);
+        Matcher matcher = regex.matcher(email);
+        if(matcher.matches())
+            return true;
+        Toast.makeText(SettingActivity.this,"邮箱格式不正确",Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
+    private boolean isTelephone(String trim) {
+        if(trim.isEmpty()) return true;
+        Pattern regex = Pattern.compile("^1[345789]\\d{9}$");
+        Matcher matcher = regex.matcher(trim);
+        if(matcher.matches())
+            return true;
+        Toast.makeText(SettingActivity.this,"手机号码格式有误",Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
+    private void changIcon() {
+        menuWindow = new SelectPicPopupWindow(SettingActivity.this, itemsOnClick);
+        menuWindow.showAtLocation(findViewById(R.id.id_set_layout),
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+    }
+
     //为弹出窗口实现监听类
     private View.OnClickListener itemsOnClick = new View.OnClickListener() {
         @Override
@@ -197,6 +244,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
     /**
      * 裁剪图片方法实现
+     *
      * @param uri
      */
     public void startPhotoZoom(Uri uri) {
@@ -213,22 +261,19 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         intent.putExtra("return-data", true);
         startActivityForResult(intent, REQUESTCODE_CUTTING);
     }
+
     private void setPicToView(Intent picdata) {
         Bundle extras = picdata.getExtras();
         if (extras != null) {
             // 取得SDCard图片路径做显示
             Bitmap photo = extras.getParcelable("data");
             Drawable drawable = new BitmapDrawable(null, photo);
-            urlpath = FileUtil.saveFile(SettingActivity.this, username+".jpg", photo);
+            urlpath = FileUtil.saveFile(SettingActivity.this, username + ".jpg", photo);
             imageView.setImageDrawable(drawable);
 
-            // 新线程后台上传服务端
-         //   pd = ProgressDialog.show(SettingActivity.this, null, "正在上传图片，请稍候...");
-         //   new Thread(uploadImageRunnable).start();
+
         }
     }
-
-
 
 
     private void doLogout() {
@@ -248,11 +293,11 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             public void run() {
                 try {
                     URL url = new URL(icon);
-                    Drawable drawable=Drawable.createFromStream(url.openStream(),"icon.jpg");
+                    Drawable drawable = Drawable.createFromStream(url.openStream(), "icon.jpg");
 //                    imageView.setImageBitmap(BitmapFactory.decodeStream(url.openStream()));
-                    Message msg=new Message();
-                    msg.what=GET_DRAWABLE;
-                    msg.obj=drawable;
+                    Message msg = new Message();
+                    msg.what = GET_DRAWABLE;
+                    msg.obj = drawable;
                     handler.sendMessage(msg);
 
                 } catch (Exception e) {
@@ -264,20 +309,104 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode){
+        switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 finish();
                 return false;
             default:
-                return super.onKeyDown(keyCode,event);
+                return super.onKeyDown(keyCode, event);
         }
     }
-    Handler handler=new Handler(){
+
+    Runnable uploadImageRunnable = new Runnable() {
+        @Override
+        public void run() {
+
+//            if (TextUtils.isEmpty(serverPath)) {
+//                Toast.makeText(SettingActivity.this, "还没有设置上传服务器的路径！", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+
+            Map<String, String> textParams;
+            Map<String, File> fileparams;
+
+            try {
+                // 创建一个URL对象
+                URL url = new URL(serverPath);
+                textParams = new HashMap<String, String>();
+                fileparams = new HashMap<String, File>();
+                // 要上传的图片文件
+                if (urlpath != null) {
+                    File file = new File(urlpath);
+                    fileparams.put("file", file);
+                }
+                textParams.put("username", username);
+                textParams.put("motto", et_motto.getText().toString().trim());
+                textParams.put("tel", et_telephone.getText().toString().trim());
+                textParams.put("email", et_email.getText().toString().trim());
+                // 利用HttpURLConnection对象从网络中获取网页数据
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                // 设置连接超时（记得设置连接超时,如果网络不好,Android系统在超过默认时间会收回资源中断操作）
+                conn.setConnectTimeout(5000);
+                // 设置允许输出（发送POST请求必须设置允许输出）
+                conn.setDoOutput(true);
+                // 设置使用POST的方式发送
+                conn.setRequestMethod("POST");
+                // 设置不使用缓存（容易出现问题）
+                conn.setUseCaches(false);
+                conn.setRequestProperty("Charset", "UTF-8");//设置编码
+                // 在开始用HttpURLConnection对象的setRequestProperty()设置,就是生成HTML文件头
+                conn.setRequestProperty("ser-Agent", "Fiddler");
+                // 设置contentType
+                conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + NetUtil.BOUNDARY);
+                OutputStream os = conn.getOutputStream();
+                DataOutputStream ds = new DataOutputStream(os);
+                NetUtil.writeStringParams(textParams, ds);
+                NetUtil.writeFileParams(fileparams, ds);
+                NetUtil.paramsEnd(ds);
+                // 对文件流操作完,要记得及时关闭
+                os.close();
+                // 服务器返回的响应吗
+                int code = conn.getResponseCode(); // 从Internet获取网页,发送请求,将网页以流的形式读回来
+                // 对响应码进行判断
+                if (code == 200) {// 返回的响应码200,是成功
+                    // 得到网络返回的输入流
+                    InputStream is = conn.getInputStream();
+                    resultStr = NetUtil.readString(is);
+                    System.out.println(resultStr);
+                    Message msg_result = new Message();
+                    msg_result.what = CHAGNG_RESULT;
+                    msg_result.obj = resultStr;
+                    handler.sendMessage(msg_result);
+                } else {
+                    Toast.makeText(SettingActivity.this, "请求URL失败！", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    };
+
+
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case GET_DRAWABLE:
                     imageView.setImageDrawable((Drawable) msg.obj);
+                    break;
+                case CHAGNG_RESULT:
+                    pd.dismiss();
+                    preferences = getSharedPreferences("ahu", MODE_PRIVATE);
+                    editor = preferences.edit();
+                    editor.putString("telephone", et_telephone.getText().toString().trim());
+                    editor.putString("email", et_email.getText().toString().trim());
+                    editor.putString("motto", et_motto.getText().toString().trim());
+                    if (urlpath != null) {
+                        editor.putString("icon", "http://121.42.218.244/ahu/icon/" + username + ".jpg");
+                    }
+                    editor.commit();
                     break;
                 default:
                     break;

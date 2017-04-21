@@ -3,7 +3,6 @@ package com.example.wangjia.news;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -256,5 +254,16 @@ public class ZhuYeActivity extends AppCompatActivity implements
         mIndicator= (ViewPagerIndicator)layout_news.findViewById(R.id.id_indicator);
 
     }
-    //-------------------------------------------
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        preferences=getSharedPreferences("ahu",MODE_WORLD_READABLE);
+        username=preferences.getString("username",null);
+        motto=preferences.getString("motto",null);
+        icon=preferences.getString("icon",null);
+        zhu_username.setText(username);
+        zhu_motto.setText(motto);
+        getIcon();
+    }
 }
