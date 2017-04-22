@@ -20,7 +20,6 @@
             />
 
         <EditText
-            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             android:maxLength="18"
             android:maxLines="1"
             android:id="@+id/reg_username"

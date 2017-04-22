@@ -83,14 +83,21 @@ public class NewsContentActivity extends AppCompatActivity {
         settings.setUseWideViewPort(true);
         settings.setDisplayZoomControls(false);
         settings.setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(url);
-                return true;
-            }
-        });
+//        webView.setWebViewClient(new WebViewClient(){
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//                view.loadUrl(url);
+//                return true;
+//            }
+//        });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        webView.loadUrl(url);
+    }
+
     private Toolbar.OnMenuItemClickListener onMenuItemClick= new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {

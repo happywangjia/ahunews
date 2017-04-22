@@ -74,11 +74,11 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(RegisterActivity.this, "两次密码不同", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(username.length()<6||pass.length()<6){
+        if(username.length()<2||pass.length()<2){
             reg_username.setText("");
             reg_password.setText("");
             reg_next_password.setText("");
-            Toast.makeText(RegisterActivity.this, "用户名和密码长度限制在6~18", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RegisterActivity.this, "用户名和密码长度限制在2~18", Toast.LENGTH_SHORT).show();
             return;
         }
 

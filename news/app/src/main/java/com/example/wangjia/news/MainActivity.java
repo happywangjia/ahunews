@@ -126,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "请输入账号和密码", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(username.length()<6||password.length()<6){
-            Toast.makeText(MainActivity.this, "账号和密码至少6位", Toast.LENGTH_SHORT).show();
+        if(username.length()<2||password.length()<2){
+            Toast.makeText(MainActivity.this, "账号和密码至少2位", Toast.LENGTH_SHORT).show();
             return;
         }
 

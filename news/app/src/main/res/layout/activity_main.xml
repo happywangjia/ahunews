@@ -26,9 +26,8 @@
             android:text="用户名"
             android:textSize="25sp"
             android:id="@+id/textView" />
-
+<!--android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"-->
         <EditText
-            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             android:maxLength="18"
             android:maxLines="1"
             android:id="@+id/input_username"
