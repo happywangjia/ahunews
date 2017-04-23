@@ -1,16 +1,13 @@
 package com.example.wangjia.news;
 
 import android.content.Intent;
-
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -19,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.wangjia.news.utils.Base64Tools;
 import com.example.wangjia.news.utils.HttpUtils;
 
 import org.json.JSONException;
@@ -31,14 +27,20 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+
+import cn.smssdk.EventHandler;
+import cn.smssdk.SMSSDK;
+import cn.smssdk.gui.RegisterPage;
 
 public class MainActivity extends AppCompatActivity {
 
+    Button button_sms;
     ImageView input_delete;
     EditText input_username;
     EditText input_password;
     Button button_login;
-    Button button_register;
+    TextView tv_register;
     public final int SUCCESS = 1;
     public final int PARSER = 2;
     public static String username;
@@ -52,33 +54,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        preferences=getSharedPreferences("ahu",MODE_WORLD_READABLE);
-        editor=preferences.edit();
-        String uName=preferences.getString("username",null);
-        String uPsw=preferences.getString("password",null);
+        preferences = getSharedPreferences("ahu", MODE_WORLD_READABLE);
+        editor = preferences.edit();
+        String uName = preferences.getString("username", null);
+        String uPsw = preferences.getString("password", null);
         input_username = (EditText) findViewById(R.id.input_username);
         input_password = (EditText) findViewById(R.id.input_password);
-        input_delete= (ImageView) findViewById(R.id.input_delete);
-        if(uName!=null){
-            username=uName;
+        input_delete = (ImageView) findViewById(R.id.input_delete);
+        if (uName != null) {
+            username = uName;
             input_username.setText(uName);
             input_delete.setVisibility(View.VISIBLE);
         }
-        if(uName!=null&&uPsw!=null){
-            password=uPsw;
+        if (uName != null && uPsw != null) {
+            password = uPsw;
             input_password.setText(uPsw);
             login();
         }
         input_username.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(s.length()==0){
+                if (s.length() == 0) {
                     input_delete.setVisibility(View.INVISIBLE);
                 }
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count==0){
+                if (count == 0) {
                     //Toast.makeText(MainActivity.this,"before+"+s.length(),Toast.LENGTH_SHORT).show();
                     input_delete.setVisibility(View.INVISIBLE);
                 }
@@ -86,16 +89,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length()!=0){
-           //         Toast.makeText(MainActivity.this,"after+"+s.length(),Toast.LENGTH_SHORT).show();
+                if (s.length() != 0) {
+                    //         Toast.makeText(MainActivity.this,"after+"+s.length(),Toast.LENGTH_SHORT).show();
                     input_delete.setVisibility(View.VISIBLE);
                 }
             }
         });
 
         button_login = (Button) findViewById(R.id.button_login);
-        button_register = (Button) findViewById(R.id.button_register);
-
+        tv_register = (TextView) findViewById(R.id.tv_register);
+        button_sms = (Button) findViewById(R.id.button_sms);
         input_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,10 +113,18 @@ public class MainActivity extends AppCompatActivity {
                 login();
             }
         });
-        button_register.setOnClickListener(new View.OnClickListener() {
+        tv_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 register();
+            }
+        });
+        button_sms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent smsIntent=new Intent(MainActivity.this,SmsLoginActivity.class);
+                startActivity(smsIntent);
+                finish();
             }
         });
 
@@ -126,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "请输入账号和密码", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(username.length()<2||password.length()<2){
+        if (username.length() < 2 || password.length() < 2) {
             Toast.makeText(MainActivity.this, "账号和密码至少2位", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -139,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 HttpURLConnection connection = null;
                 BufferedReader reader = null;
                 try {
-                    String strUrl = "http://" + localhost + "/ahu/login.php?username=" + URLEncoder.encode(username,"UTF-8")+
+                    String strUrl = "http://" + localhost + "/ahu/login.php?username=" + URLEncoder.encode(username, "UTF-8") +
                             "&password=" + URLEncoder.encode(password);
                     URL url = new URL(strUrl);
                     connection = (HttpURLConnection) url.openConnection();
@@ -186,25 +197,25 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case PARSER:
                     if (msg.obj.toString().equals("0")) {
-                        editor.putString("username",username);
-                        editor.putString("password",password);
+                        editor.putString("username", username);
+                        editor.putString("password", password);
 
                         //   Toast.makeText(MainActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
                         Intent toZhuIntent = new Intent(MainActivity.this, ZhuYeActivity.class);
 //                        Bundle nextBundle = new Bundle();
 //                        nextBundle.putString("username", username);
                         try {
-                            String motto=cnt_json.getString("motto");
-                            String icon=cnt_json.getString("icon");
-                            String telephone=cnt_json.getString("tel");
-                            String email=cnt_json.getString("email");
-                            editor.putString("telephone",telephone);
-                            editor.putString("email",email);
+                            String motto = cnt_json.getString("motto");
+                            String icon = cnt_json.getString("icon");
+                            String telephone = cnt_json.getString("tel");
+                            String email = cnt_json.getString("email");
+                            editor.putString("telephone", telephone);
+                            editor.putString("email", email);
 
 //                            nextBundle.putString("motto",motto);
 //                            toZhuIntent.putExtras(nextBundle);
-                            editor.putString("motto",motto);
-                            editor.putString("icon",icon);
+                            editor.putString("motto", motto);
+                            editor.putString("icon", icon);
                             editor.commit();
                             MainActivity.this.startActivity(toZhuIntent);
                             finish();

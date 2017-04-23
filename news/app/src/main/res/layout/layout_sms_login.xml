@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/sms_login_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="#837C7C"
+
+        ></android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:paddingTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="手机号："
+                    android:textColor="#777777"
+                    android:textSize="25sp" />
+
+                <EditText
+                    android:id="@+id/et_phone"
+                    android:digits="0123456789"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="请输入您的手机号"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:paddingLeft="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="验证码："
+                    android:textColor="#777777"
+                    android:textSize="25sp" />
+
+                <EditText
+                    android:id="@+id/et_code"
+                    android:digits="0123456789"
+                    android:layout_width="80dp"
+                    android:layout_height="50dp"
+                    android:hint="验证码"
+                    android:maxLength="4"
+                    android:maxWidth="120dp"
+                    android:paddingLeft="10sp" />
+
+                <TextView
+                    android:id="@+id/tv_get_code"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:layout_marginLeft="10dp"
+                    android:focusableInTouchMode="true"
+                    android:textColor="#486F46"
+                    android:background="#ccc"
+                    android:text="获取验证码" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/bt_submit_code"
+                android:layout_gravity="center"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text=" 提  交 "
+                android:textColor="#777777"
+                android:textSize="25sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="bottom"
+       >
+
+        <TextView
+            android:id="@+id/tv_sms_user"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:textSize="25sp"
+            android:clickable="true"
+            android:focusable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#628658"
+            android:layout_marginBottom="5dp"
+            android:text=" 账号登录 " />
+
+        <TextView
+            android:id="@+id/tv_back_register"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:textSize="25sp"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:focusable="false"
+            android:textColor="#628658"
+            android:text=" 注  册 " />
+
+    </RelativeLayout>
+
+</LinearLayout>

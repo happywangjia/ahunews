@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.wangjia.news.utils.HttpUtils;
@@ -28,6 +29,7 @@ import java.net.URLEncoder;
  */
 
 public class RegisterActivity extends AppCompatActivity {
+    TextView back_login;
     EditText reg_username;
     EditText reg_password;
     EditText reg_next_password;
@@ -51,6 +53,15 @@ public class RegisterActivity extends AppCompatActivity {
         reg_password = (EditText) findViewById(R.id.reg_password);
         reg_next_password = (EditText) findViewById(R.id.reg_next_password);
         button_reg_register = (Button) findViewById(R.id.button_reg_register);
+        back_login= (TextView) findViewById(R.id.tv_back_login);
+        back_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(RegisterActivity.this,MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         button_reg_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

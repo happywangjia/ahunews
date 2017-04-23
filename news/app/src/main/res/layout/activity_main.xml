@@ -90,7 +90,7 @@
 
     <Button
         android:id="@+id/button_login"
-
+        android:textColor="#777777"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="41dp"
@@ -101,16 +101,31 @@
         android:layout_marginStart="18dp" />
 
     <Button
-        android:id="@+id/button_register"
+        android:id="@+id/button_sms"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginEnd="29dp"
-        android:text="注      册"
+        android:text="手机登录"
+        android:textColor="#777777"
         android:textSize="25sp"
         android:layout_alignBaseline="@+id/button_login"
         android:layout_alignBottom="@+id/button_login"
         android:layout_alignEnd="@+id/linearLayout" />
 
+    <TextView
+        android:id="@+id/tv_register"
+        android:clickable="true"
+        android:focusable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="  注  册  "
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="25sp"
+        android:textColor="#628658"
+
+        />
 
 </RelativeLayout>
