@@ -31,6 +31,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
+
 /**
  * Created by wangjia on 2017/4/11.
  */
@@ -90,6 +93,8 @@ public class NewsContentActivity extends AppCompatActivity {
 //                return true;
 //            }
 //        });
+
+        ShareSDK.initSDK(NewsContentActivity.this);
     }
 
     @Override
@@ -103,7 +108,7 @@ public class NewsContentActivity extends AppCompatActivity {
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()){
                 case R.id.action_share:
-                    doShare();
+                    showShare();
                     break;
                 case R.id.action_collect:
                     doCollect();
@@ -128,9 +133,7 @@ public class NewsContentActivity extends AppCompatActivity {
 
     }
 
-    private void doShare() {
 
-    }
 
     private void doCollect() {
         new Thread(new Runnable() {
@@ -223,5 +226,35 @@ public class NewsContentActivity extends AppCompatActivity {
         map.put("military","军事");
         map.put("joke","笑话");
 
+    }
+    /**
+     * onkeyshare的界面分享
+     *
+     */
+    private void showShare() {
+        ShareSDK.initSDK(this);
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
+        oks.setTitle(title);
+        // titleUrl是标题的网络链接，QQ和QQ空间等使用
+        oks.setTitleUrl(url);
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText(title);
+        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+        //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl(url);
+        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+        oks.setComment("这条新闻推荐给大家");
+        // site是分享此内容的网站名称，仅在QQ空间使用
+        oks.setSite(getString(R.string.app_name));
+        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+        oks.setSiteUrl(url);
+
+// 启动分享GUI
+        oks.show(this);
     }
 }
