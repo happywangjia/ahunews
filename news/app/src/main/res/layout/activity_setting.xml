@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.wangjia.news.SettingActivity"
-    android:weightSum="1">
+    android:weightSum="1"
+    tools:context="com.example.wangjia.news.SettingActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/setting_toolbar"
@@ -18,9 +18,9 @@
         ></android.support.v7.widget.Toolbar>
 
     <LinearLayout
-        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="110dp"
+        android:layout_marginTop="5dp"
         android:background="#D8D6D6"
         android:clickable="true"
         android:orientation="horizontal">
@@ -68,13 +68,13 @@
 
             <EditText
                 android:id="@+id/id_set_motto"
-                android:gravity="top"
                 android:layout_width="0dp"
                 android:layout_height="110dp"
                 android:layout_weight="1"
-                android:maxLength="20"
                 android:background="@android:drawable/alert_light_frame"
+                android:gravity="top"
                 android:lines="2"
+                android:maxLength="20"
                 android:textColor="#6F6F6F"
                 android:textSize="25sp" />
         </LinearLayout>
@@ -94,14 +94,13 @@
             <EditText
                 android:id="@+id/id_set_telephone"
                 android:layout_width="0dp"
-                android:lines="1"
-                android:digits="0123456789"
-                android:maxLength="11"
-                android:hint="请添加手机号码"
-                android:textColor="#6F6F6F"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                />
+                android:digits="0123456789"
+                android:hint="请添加手机号码"
+                android:lines="1"
+                android:maxLength="11"
+                android:textColor="#6F6F6F" />
         </LinearLayout>
 
         <LinearLayout
@@ -118,13 +117,13 @@
 
             <EditText
                 android:id="@+id/id_set_email"
-                android:hint="请添加邮箱"
-                android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
-                android:maxLength="30"
                 android:layout_width="0dp"
-                android:textColor="#6F6F6F"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
+                android:hint="请添加邮箱"
+                android:maxLength="30"
+                android:textColor="#6F6F6F" />
         </LinearLayout>
 
         <LinearLayout
@@ -153,22 +152,36 @@
         </LinearLayout>
 
     </LinearLayout>
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        >
+        android:layout_gravity="bottom">
 
-    <TextView
-        android:layout_gravity="bottom"
-        android:id="@+id/id_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="切换账号？"
-        android:textColor="#767EB4"
-        android:textSize="30sp"
-        android:layout_marginBottom="5dp"
-        />
-    </LinearLayout>
+        <TextView
+            android:id="@+id/id_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:text="切换账号"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentLeft="true"
+            android:textColor="#767EB4"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/id_reset"
+            android:layout_marginRight="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:text="重置密码"
+            android:textColor="#767EB4"
+            android:textSize="30sp" />
+    </RelativeLayout>
 </LinearLayout>

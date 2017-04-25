@@ -28,15 +28,21 @@ import android.widget.Toast;
 
 import com.example.wangjia.news.utils.CircleImg;
 import com.example.wangjia.news.utils.FileUtil;
+import com.example.wangjia.news.utils.HttpUtils;
 import com.example.wangjia.news.utils.NetUtil;
 import com.example.wangjia.news.utils.SelectPicPopupWindow;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -56,6 +62,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private Button bt_cancel;
     private SelectPicPopupWindow menuWindow;
     private static ProgressDialog pd;
+    private TextView tv_reset;
 
     private String resultStr = "";    // 服务端返回结果集
     private static String serverPath;
@@ -66,6 +73,9 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private static String IMAGE_FILE_NAME;
     private static final int GET_DRAWABLE = 4;
     private static final int CHAGNG_RESULT = 5;
+    public static JSONObject cnt_json;
+    public static final int PARSER = 7;
+    public static final int RESET=8;
 
     private CircleImg imageView;
     String icon;
@@ -82,13 +92,14 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_setting);
-        preferences = getSharedPreferences("ahu", MODE_PRIVATE);
-        editor = preferences.edit();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.setting_toolbar);
         //      toolbar.setLogo(R.drawable.ic_menu_camera);
         toolbar.setTitle("设置");
         toolbar.setTitleTextColor(Color.parseColor("#ffffffff"));
         setSupportActionBar(toolbar);
+        preferences = getSharedPreferences("ahu", MODE_PRIVATE);
+        editor = preferences.edit();
         motto = preferences.getString("motto", null);
         icon = preferences.getString("icon", null);
         username = preferences.getString("username", null);
@@ -102,6 +113,8 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         bt_cancel = (Button) findViewById(R.id.id_set_cancel);
         tv_username = (TextView) findViewById(R.id.id_set_username);
         tv_logout = (TextView) findViewById(R.id.id_logout);
+        tv_reset = (TextView) findViewById(R.id.id_reset);
+        tv_reset.setOnClickListener(this);
         tv_logout.setOnClickListener(this);
         tv_username.setOnClickListener(this);
         bt_submit.setOnClickListener(this);
@@ -147,17 +160,63 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.id_set_icon:
                 changIcon();
                 break;
+            case R.id.id_reset:
+                resetPsw();
+                break;
             default:
                 break;
         }
     }
 
-    private void doSubmit() {
-        if(isTelephone(et_telephone.getText().toString().trim())==false){
-            return ;
+    private void resetPsw() {
+        preferences = getSharedPreferences("ahu", MODE_PRIVATE);
+        email = preferences.getString("email", null);
+        if (email == null) {
+            Toast.makeText(SettingActivity.this, "请先绑定邮箱", Toast.LENGTH_SHORT).show();
+            return;
         }
-        if(isEmail(et_email.getText().toString().toString().trim())==false){
-            return ;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String localhost = getResources().getString(R.string.localhost);
+
+                HttpURLConnection connection = null;
+                BufferedReader reader = null;
+                try {
+                    String strUrl = "http://" + localhost + "/ahu/mail/sendmail.php?email=" + URLEncoder.encode(email, "UTF-8");
+                    URL url = new URL(strUrl);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setReadTimeout(8000);
+                    connection.setConnectTimeout(8000);
+                    int code = connection.getResponseCode();
+                    if (code == 200) {
+                        handler.sendEmptyMessage(RESET);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    private void doSubmit() {
+        if (isTelephone(et_telephone.getText().toString().trim()) == false) {
+            return;
+        }
+        if (isEmail(et_email.getText().toString().toString().trim()) == false) {
+            return;
         }
 
         pd = ProgressDialog.show(SettingActivity.this, null, "正在提交修改，请稍候...");
@@ -165,23 +224,23 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private boolean isEmail(String trim) {
-        if(trim.isEmpty()) return true;
+        if (trim.isEmpty()) return true;
         String check = "^([a-z0-9A-Z]+[-|_|.]?)*[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
         Pattern regex = Pattern.compile(check);
         Matcher matcher = regex.matcher(email);
-        if(matcher.matches())
+        if (matcher.matches())
             return true;
-        Toast.makeText(SettingActivity.this,"邮箱格式不正确",Toast.LENGTH_SHORT).show();
+        Toast.makeText(SettingActivity.this, "邮箱格式不正确", Toast.LENGTH_SHORT).show();
         return false;
     }
 
     private boolean isTelephone(String trim) {
-        if(trim.isEmpty()) return true;
+        if (trim.isEmpty()) return true;
         Pattern regex = Pattern.compile("^1[345789]\\d{9}$");
         Matcher matcher = regex.matcher(trim);
-        if(matcher.matches())
+        if (matcher.matches())
             return true;
-        Toast.makeText(SettingActivity.this,"手机号码格式有误",Toast.LENGTH_SHORT).show();
+        Toast.makeText(SettingActivity.this, "手机号码格式有误", Toast.LENGTH_SHORT).show();
         return false;
     }
 
@@ -373,7 +432,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                     // 得到网络返回的输入流
                     InputStream is = conn.getInputStream();
                     resultStr = NetUtil.readString(is);
-                    System.out.println(resultStr);
+                    //              System.out.println(resultStr);
                     Message msg_result = new Message();
                     msg_result.what = CHAGNG_RESULT;
                     msg_result.obj = resultStr;
@@ -398,15 +457,35 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case CHAGNG_RESULT:
                     pd.dismiss();
-                    preferences = getSharedPreferences("ahu", MODE_PRIVATE);
-                    editor = preferences.edit();
-                    editor.putString("telephone", et_telephone.getText().toString().trim());
-                    editor.putString("email", et_email.getText().toString().trim());
-                    editor.putString("motto", et_motto.getText().toString().trim());
-                    if (urlpath != null) {
-                        editor.putString("icon", "http://121.42.218.244/ahu/icon/" + username + ".jpg");
+                    //    Toast.makeText(SettingActivity.this,msg.obj.toString(),Toast.LENGTH_SHORT).show();
+                    ParseJson(msg.obj.toString());
+
+
+                    break;
+                case PARSER:
+                    String num = msg.obj.toString();
+                    //            System.out.println("wwwwwwwww"+et_telephone.getText().toString().toString().equals(""));
+                    if (num.equals("0")) {
+                        preferences = getSharedPreferences("ahu", MODE_PRIVATE);
+                        editor = preferences.edit();
+
+                        if (et_telephone.getText().toString().trim().equals("") == false)
+                            editor.putString("telephone", et_telephone.getText().toString().trim());
+                        if (et_email.getText().toString().trim().equals("") == false)
+                            editor.putString("email", et_email.getText().toString().trim());
+                        editor.putString("motto", et_motto.getText().toString().trim());
+                        if (urlpath != null) {
+                            editor.putString("icon", "http://121.42.218.244/ahu/icon/" + username + ".jpg");
+                        }
+                        editor.commit();
+                    } else if (num.equals("1")) {
+                        Toast.makeText(SettingActivity.this, "该手机号已绑定其他账号", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(SettingActivity.this, "该邮箱已绑定其他账号", Toast.LENGTH_SHORT).show();
                     }
-                    editor.commit();
+                    break;
+                case RESET:
+                    Toast.makeText(SettingActivity.this,"重置密码邮件已发至邮箱，请查看",Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -414,5 +493,19 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         }
     };
 
+    public void ParseJson(String StringData) {
+        try {
+            JSONObject jsonObject = new JSONObject(StringData);
+            int num = jsonObject.getInt("num");
+            Message msg = new Message();
+            msg.what = PARSER;
+            cnt_json = jsonObject;
+            msg.obj = "" + num;
+            handler.sendMessage(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

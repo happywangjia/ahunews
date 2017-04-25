@@ -122,13 +122,11 @@ public class MainActivity extends AppCompatActivity {
         button_sms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent smsIntent=new Intent(MainActivity.this,SmsLoginActivity.class);
+                Intent smsIntent = new Intent(MainActivity.this, SmsLoginActivity.class);
                 startActivity(smsIntent);
                 finish();
             }
         });
-
-
     }
 
     public void login() {
