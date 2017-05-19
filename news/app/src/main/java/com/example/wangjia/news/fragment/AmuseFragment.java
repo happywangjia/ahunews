@@ -33,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by wangjia on 2017/4/11.
@@ -46,6 +47,7 @@ public class AmuseFragment extends Fragment {
     ArrayList<NewsItem> list = new ArrayList<>();
     View view;
     String category;
+    public static HashMap<String,String> map=new HashMap<>();
 
     @Nullable
     @Override
@@ -55,6 +57,7 @@ public class AmuseFragment extends Fragment {
         Bundle bundle = getArguments();
         category = bundle.getString("category");
         username = bundle.getString("username");
+        init();
         getData();
         return view;
     }
@@ -114,7 +117,7 @@ public class AmuseFragment extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putString("title", item.title);
                 bundle.putString("url", item.url);
-                bundle.putString("category", category);
+                bundle.putString("category", item.category);
                 bundle.putString("username", username);
                 Intent intent = new Intent(getContext(), NewsContentActivity.class);
                 intent.putExtras(bundle);
@@ -124,6 +127,17 @@ public class AmuseFragment extends Fragment {
 
     }
 
+    private void init() {
+        map.put("recommend","推荐");
+        map.put("amuse","娱乐");
+        map.put("technology","科技");
+        map.put("life","生活");
+        map.put("learning","学习");
+        map.put("culture","文化");
+        map.put("military","军事");
+        map.put("joke","笑话");
+
+    }
 
     public static AmuseFragment newInstance(String category, String uName) {
         Bundle bundle = new Bundle();
@@ -201,8 +215,9 @@ public class AmuseFragment extends Fragment {
                 String title = json.getString("title");
                 String time = json.getString("time");
                 String url = json.getString("url");
+                String category=json.getString("category");
                 //         System.out.println(title+"  "+time+"  "+url);
-                NewsItem item = new NewsItem(title, url, time);
+                NewsItem item = new NewsItem(title, map.get(category),url, time);
                 list.add(item);
             }
             Message msg = new Message();

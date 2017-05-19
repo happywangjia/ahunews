@@ -62,7 +62,7 @@ public class NewsContentActivity extends AppCompatActivity {
         title=getIntent().getExtras().getString("title");
         category=getIntent().getExtras().getString("category");
         Toolbar toolbar= (Toolbar) findViewById(R.id.content_toolbar);
-        toolbar.setTitle(map.get(category));
+        toolbar.setTitle(category);
         String tmp=title;
         if(title.length()>10){
             tmp=title.substring(0,10);

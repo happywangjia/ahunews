@@ -8,11 +8,13 @@ public class NewsItem {
     public String title;
     public String url;
     public String time;
+    public String category;
 
-    public NewsItem(String mtitle,String murl,String mtime) {
+    public NewsItem(String mtitle,String mCategory,String murl,String mtime) {
         title=mtitle;
         url=murl;
         time=mtime;
+        category=mCategory;
     }
 
     @Override
@@ -20,6 +22,7 @@ public class NewsItem {
         return "NewsItem{" +
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
+                ", category='"+category+'\''+
                 ", time='" + time + '\'' +
                 '}';
     }

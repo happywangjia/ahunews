@@ -13,14 +13,11 @@
         android:background="#837C7C"
 
         ></android.support.v7.widget.Toolbar>
-    <LinearLayout
+    <ListView
+        android:id="@+id/comment_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="评论"/>
 
-    </LinearLayout>
+    </ListView>
 
 </LinearLayout>

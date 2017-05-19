@@ -192,9 +192,6 @@ public class ZhuYeActivity extends AppCompatActivity implements
 //            commentIntent.putExtras(commentBundle);
             startActivity(commentIntent);
 
-        }else if(id==R.id.nav_history){
-            Toast.makeText(ZhuYeActivity.this,"history",Toast.LENGTH_SHORT).show();
-            return true;
         } else if(id==R.id.nav_manage){
             Intent setIntent=new Intent(ZhuYeActivity.this,SettingActivity.class);
 //            Bundle setBundle=new Bundle();
