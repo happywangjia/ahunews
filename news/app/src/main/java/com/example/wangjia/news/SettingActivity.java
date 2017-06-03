@@ -225,9 +225,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
     private boolean isEmail(String trim) {
         if (trim.isEmpty()) return true;
-        String check = "^([a-z0-9A-Z]+[-|_|.]?)*[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        String check = "^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+$";
         Pattern regex = Pattern.compile(check);
-        Matcher matcher = regex.matcher(email);
+        Matcher matcher = regex.matcher(trim);
+        System.out.println(trim+"  "+matcher.matches());
         if (matcher.matches())
             return true;
         Toast.makeText(SettingActivity.this, "邮箱格式不正确", Toast.LENGTH_SHORT).show();
